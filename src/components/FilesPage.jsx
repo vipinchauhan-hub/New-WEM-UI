@@ -7,6 +7,43 @@ import {
 } from 'lucide-react';
 
 const FilesPage = () => {
+    const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+
+    // Helper UI components for Modern Advanced Search
+    const ModernInput = ({ label, type = "text", placeholder = "", icon: Icon }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>
+            <div style={{ position: 'relative' }}>
+                {Icon && <Icon size={14} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />}
+                <input type={type} placeholder={placeholder} style={{ 
+                    width: '100%', padding: Icon ? '10px 14px 10px 34px' : '10px 14px', 
+                    borderRadius: '8px', border: '1px solid var(--border-color)', 
+                    backgroundColor: 'white', fontSize: '13px', outline: 'none', color: 'var(--text-primary)',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)', transition: 'all 0.2s',
+                }} 
+                onFocus={(e) => { e.target.style.borderColor = '#3ca0c5'; e.target.style.boxShadow = '0 0 0 3px rgba(60, 160, 197, 0.1)'; }}
+                onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)'; }} />
+            </div>
+        </div>
+    );
+
+    const BaseSelect = ({ label, options }) => (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {label && <label style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{label}</label>}
+            <div style={{ position: 'relative' }}>
+                <select style={{ 
+                    width: '100%', padding: '10px 32px 10px 14px', borderRadius: '8px', 
+                    border: '1px solid var(--border-color)', backgroundColor: 'white', 
+                    fontSize: '13px', outline: 'none', appearance: 'none', color: 'var(--text-primary)',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)', cursor: 'pointer', transition: 'border-color 0.2s'
+                }} onFocus={(e) => e.target.style.borderColor = '#0ea5e9'} onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}>
+                    {options.map(opt => <option key={opt}>{opt}</option>)}
+                </select>
+                <ChevronDown size={14} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
+            </div>
+        </div>
+    );
+
     // Mock Data for Files Grid
     const [files] = useState([
         {
@@ -112,22 +149,65 @@ const FilesPage = () => {
                             display: 'flex', alignItems: 'center', gap: '8px',
                             padding: '10px 16px', borderRadius: '8px',
                             border: '1px solid var(--border-color)', backgroundColor: 'white',
-                            color: 'var(--text-primary)', fontWeight: 600, cursor: 'pointer'
-                        }}>
+                            color: 'var(--text-primary)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s'
+                        }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor='#f8fafc'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor='white'}>
                             <Download size={16} />
                             Export
                         </button>
-                        <button style={{
-                            display: 'flex', alignItems: 'center', gap: '8px',
-                            padding: '10px 16px', borderRadius: '8px',
-                            border: 'none', backgroundColor: 'var(--primary-brand)',
-                            color: 'white', fontWeight: 600, cursor: 'pointer',
-                            boxShadow: 'var(--shadow-custom)'
+                        <button 
+                            onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                            style={{ 
+                                padding: '10px 16px', borderRadius: '8px', border: 'none', 
+                                backgroundColor: showAdvancedSearch ? '#f1f5f9' : 'var(--primary-brand)', 
+                                color: showAdvancedSearch ? 'var(--text-primary)' : 'white', 
+                                fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', 
+                                alignItems: 'center', gap: '8px', boxShadow: showAdvancedSearch ? 'none' : '0 4px 6px -1px rgba(2, 132, 199, 0.2)',
+                                transition: 'all 0.2s'
                         }}>
-                            <Search size={16} />
-                            Advanced Search
+                            <Search size={16} /> 
+                            Advanced Search 
+                            <ChevronDown size={16} style={{ transform: showAdvancedSearch ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }} />
                         </button>
                     </div>
+                </div>
+            </div>
+
+            {/* Premium Advanced Search Panel */}
+            <div style={{ 
+                backgroundColor: 'white', border: '1px solid var(--border-color)', borderRadius: '12px', 
+                padding: showAdvancedSearch ? '24px' : '0 24px', overflow: 'hidden',
+                maxHeight: showAdvancedSearch ? '800px' : '0', opacity: showAdvancedSearch ? 1 : 0,
+                marginTop: showAdvancedSearch ? '0' : '-16px', marginBottom: showAdvancedSearch ? '24px' : '0',
+                visibility: showAdvancedSearch ? 'visible' : 'hidden',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: 'var(--shadow-md)'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid #f1f5f9' }}>
+                    <Search size={18} color="var(--primary-brand)" />
+                    <h2 style={{ fontSize: '16px', fontWeight: 600, color: '#0f4c75' }}>File Tracking Info</h2>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', rowGap: '24px' }}>
+                    {/* Row 1 */}
+                    <ModernInput label="From Received Date" icon={Calendar} placeholder="MM/DD/YYYY" />
+                    <ModernInput label="To Received Date" icon={Calendar} placeholder="MM/DD/YYYY" />
+                    <ModernInput label="File Name" />
+                    <BaseSelect label="Exchange" options={['ALL']} />
+
+                    {/* Row 2 */}
+                    <BaseSelect label="Market" options={['ALL', 'Individual']} />
+                    <BaseSelect label="File Type" options={['ALL', 'Enrollment', 'Claims', 'Eligibility']} />
+                    {/* Empty fillers to push buttons to right corner if we want, but grid handles it cleanly */}
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
+                    <button style={{ padding: '10px 24px', borderRadius: '8px', border: '1px solid var(--border-color)', backgroundColor: 'white', color: 'var(--text-secondary)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }} onMouseEnter={(e) => { e.currentTarget.style.backgroundColor='#f8fafc'; e.currentTarget.style.color='var(--text-primary)'; }} onMouseLeave={(e) => { e.currentTarget.style.backgroundColor='white'; e.currentTarget.style.color='var(--text-secondary)'; }}>
+                        <RefreshCw size={14} /> Reset
+                    </button>
+                    <button style={{ padding: '10px 32px', borderRadius: '8px', border: 'none', backgroundColor: '#10b981', color: 'white', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.2)', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.transform='translateY(-1px)'} onMouseLeave={(e) => e.currentTarget.style.transform='translateY(0)'}>
+                        <Search size={14} /> Search
+                    </button>
                 </div>
             </div>
 
@@ -154,8 +234,8 @@ const FilesPage = () => {
                 <FilterButton label="Type: Enrollment" active />
                 <FilterButton label="Date: Last 24 Hours" icon={Calendar} />
 
-                <button style={{ marginLeft: 'auto', padding: '8px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--primary-brand)', color: 'white', cursor: 'pointer' }}>
-                    <Filter size={16} />
+                <button style={{ marginLeft: 'auto', backgroundColor: '#f1f5f9', color: 'var(--text-primary)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '10px 20px', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor='#e2e8f0'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor='#f1f5f9'}>
+                    Apply Filters
                 </button>
             </div>
 

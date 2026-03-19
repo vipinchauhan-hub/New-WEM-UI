@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, FileText, Settings, Activity, ArrowLeftRight, UserPlus, LogOut } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, Activity, ArrowLeftRight, UserPlus, LogOut, Menu } from 'lucide-react';
 
-const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout }) => {
+const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout, isCollapsed = false, onToggleCollapse, onMouseEnter, onMouseLeave }) => {
   const [showLogout, setShowLogout] = useState(false);
 
   const navItems = [
@@ -14,45 +14,79 @@ const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout }) => {
 
   return (
     <aside style={{
-      width: '260px',
+      width: isCollapsed ? '80px' : '260px',
       backgroundColor: 'var(--bg-secondary)',
       borderRight: '1px solid var(--border-color)',
-      height: '100vh',
+      bottom: 0,
       display: 'flex',
       flexDirection: 'column',
       position: 'fixed',
       left: 0,
       top: 0,
-      zIndex: 10
-    }}>
-      <div style={{ padding: '24px', display: 'flex', alignItems: 'center', gap: '12px', borderBottom: '1px solid var(--border-color)' }}>
-        <div style={{
-          width: '32px',
-          height: '32px',
-          backgroundColor: 'var(--primary-brand)',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'white'
-        }}>
-          <Activity size={20} />
-        </div>
-        <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>WEM</span>
+      zIndex: 10,
+      transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    }}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
+    >
+      <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'flex-start', gap: '12px', borderBottom: '1px solid var(--border-color)' }}>
+        {isCollapsed ? (
+            <button onClick={onToggleCollapse} title="Expand Menu" style={{
+                background: 'transparent', border: 'none', cursor: 'pointer', padding: 0
+            }}>
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  backgroundColor: 'var(--primary-brand)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white'
+                }}>
+                  <Activity size={20} />
+                </div>
+            </button>
+        ) : (
+            <>
+                <button onClick={onToggleCollapse} title="Collapse Menu" style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', color: 'var(--text-primary)', borderRadius: '6px'
+                }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-primary)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                  <Menu size={24} />
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '32px',
+                      height: '32px',
+                      backgroundColor: 'var(--primary-brand)',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white'
+                    }}>
+                      <Activity size={20} />
+                    </div>
+                    <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>WEM</span>
+                </div>
+            </>
+        )}
       </div>
 
-      <nav style={{ flex: 1, padding: '24px 16px' }}>
+      <nav style={{ flex: 1, padding: isCollapsed ? '24px 8px' : '24px 16px' }}>
         <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {navItems.map((item) => (
             <li key={item.label}>
               <button
+                title={isCollapsed ? item.label : ''}
                 onClick={() => onNavigate && onNavigate(item.id)}
                 style={{
                   width: '100%',
                   display: 'flex',
                   alignItems: 'center',
+                  justifyContent: isCollapsed ? 'center' : 'flex-start',
                   gap: '12px',
-                  padding: '12px 16px',
+                  padding: isCollapsed ? '12px 0' : '12px 16px',
                   border: 'none',
                   borderRadius: '8px',
                   backgroundColor: activeTab === item.id ? 'var(--primary-brand)' : 'transparent',
@@ -62,34 +96,38 @@ const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout }) => {
                   cursor: 'pointer'
                 }}>
                 <item.icon size={20} />
-                {item.label}
+                {!isCollapsed && <span>{item.label}</span>}
               </button>
             </li>
           ))}
         </ul>
       </nav>
 
-      <div style={{ padding: '24px', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
+      <div style={{ padding: isCollapsed ? '24px 8px' : '24px', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
         {/* Logout Popup */}
         {showLogout && (
           <div style={{
             position: 'absolute',
             bottom: '80px',
-            left: '24px',
-            right: '24px',
+            left: isCollapsed ? '8px' : '24px',
+            right: isCollapsed ? '8px' : '24px',
             backgroundColor: 'var(--bg-primary)',
             border: '1px solid var(--border-color)',
             borderRadius: '12px',
             padding: '8px',
             boxShadow: 'var(--shadow-md)',
-            animation: 'fadeIn 0.2s ease'
+            animation: 'fadeIn 0.2s ease',
+            minWidth: isCollapsed ? 'auto' : '200px',
+            zIndex: 20
           }}>
             <button
+              title={isCollapsed ? 'Logout' : ''}
               onClick={() => { onLogout && onLogout(); setShowLogout(false); }}
               style={{
                 width: '100%',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
                 gap: '12px',
                 padding: '10px',
                 border: 'none',
@@ -105,16 +143,18 @@ const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout }) => {
               onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
             >
               <LogOut size={16} />
-              Logout
+              {!isCollapsed && <span>Logout</span>}
             </button>
           </div>
         )}
 
         <div
+          title={isCollapsed ? 'Admin User' : ''}
           onClick={() => setShowLogout(!showLogout)}
           style={{
             display: 'flex',
             alignItems: 'center',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
             gap: '12px',
             cursor: 'pointer',
             padding: '8px',
@@ -124,13 +164,15 @@ const Sidebar = ({ activeTab = 'Dashboard', onNavigate, onLogout }) => {
           onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-secondary)'}
           onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
         >
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e2e8f0', overflow: 'hidden' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#e2e8f0', overflow: 'hidden', flexShrink: 0 }}>
             <img src="https://ui-avatars.com/api/?name=Admin+User&background=0ea5e9&color=fff" alt="User" style={{ width: '100%', height: '100%' }} />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Admin User</span>
-            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>admin@health.com</span>
-          </div>
+          {!isCollapsed && (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>Admin User</span>
+                <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>admin@health.com</span>
+              </div>
+          )}
         </div>
       </div>
       <style>{`

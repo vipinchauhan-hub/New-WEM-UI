@@ -70,7 +70,8 @@ const LoginPage = ({ onLogin }) => {
     return (
         <div style={{
             display: 'flex',
-            minHeight: '100vh',
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
             backgroundColor: '#f8fafc',
             fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
         }}>

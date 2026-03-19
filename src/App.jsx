@@ -3,6 +3,9 @@ import Layout from './components/Layout';
 import RightPanel from './components/RightPanel';
 import Dashboard from './components/Dashboard';
 import FilesPage from './components/FilesPage';
+import TransactionsPage from './components/TransactionsPage';
+import EnrollmentPage from './components/EnrollmentPage';
+import SettingsPage from './components/SettingsPage';
 import LoginPage from './components/LoginPage';
 
 const App = () => {
@@ -29,6 +32,12 @@ const App = () => {
         <Dashboard />
       ) : currentView === 'Files' ? (
         <FilesPage />
+      ) : currentView === 'Transactions' ? (
+        <TransactionsPage />
+      ) : currentView === 'Enrollment' ? (
+        <EnrollmentPage />
+      ) : currentView === 'Settings' ? (
+        <SettingsPage />
       ) : (
         <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>
           <h2>{currentView}</h2>
